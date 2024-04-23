@@ -1,6 +1,6 @@
 #include "Game.h"
 #include "SFML/Window/Keyboard.hpp"
-#include "SFML/Window/WindowEnums.hpp"
+#include "SFML/Window/WindowStyle.hpp"
 #include <iostream>
 
 // Contructor & Destructor
@@ -26,8 +26,8 @@ void Game::initVariables() {
     this -> isFullScreen = false;
     this -> window = nullptr;
 
-    this -> vm.size.x = 800;
-    this -> vm.size.y = 600;
+    this -> vm.width = 1111;
+    this -> vm.height = 625;
 }
 
 // Public Functions
@@ -50,7 +50,7 @@ void Game::pollEvents() {
                             break;
                         case sf::Keyboard::Key::F11: {
                             if (!(this -> isFullScreen)) {
-                                this -> window -> create(this -> vm, "Zombie land", sf::Style::Default);
+                                this -> window -> create(this -> vm, "Zombie land", sf::Style::Fullscreen);
                                 this -> isFullScreen = true;
                             } else {
                                 this -> window -> create(this -> vm, "Zombie land", sf::Style::Close);
