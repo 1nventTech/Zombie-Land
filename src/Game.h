@@ -1,15 +1,16 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
-#include <SFML/System.hpp>
-#include <SFML/Window.hpp>
+#include "window_resolution.h"
+#include "main_ch.h"
 
 class Game {
 	private:
-	bool isFullScreen;
+		main_ch *player = new main_ch();
+		bool isFullScreen;
 		sf::RenderWindow * window;
 		sf::Event event_;
 		sf::VideoMode vm;
+		WR::window_resolution res;
 	// priv functions
 	void initWindow();
 	void initVariables();
@@ -22,6 +23,8 @@ class Game {
 		void render();	
 		
 		void pollEvents();
+
+		void listen();
 
 		const bool running() const;
 };
