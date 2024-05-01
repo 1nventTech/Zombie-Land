@@ -12,9 +12,10 @@ Game::Game() {
 }
 
 Game::~Game() {
-    std::cout << "Game destructor called... deleting window" << std::endl;
-    delete this -> window; 
+    this->res.~window_resolution();
+    std::cout << "Game\t\tdestructor called...\t\t(deleting player & window)" << std::endl;
     delete this -> player;
+    delete this -> window; 
 }
 
 // Private Functions
@@ -118,9 +119,9 @@ void Game::render() {
 }
 
 void Game::listen() {
-    if (this->player->top) this->player->move(0, -1);
-    if (this->player->bottom) this->player->move(0, 1);
-    if (this->player->left) this->player->move(-1, 0);
-    if (this->player->right) this->player->move(1, 0);
     this -> player -> follow_mouse();
+    if (this->player->top) this->player->move(0, -0.5);
+    if (this->player->bottom) this->player->move(0, 0.5);
+    if (this->player->left) this->player->move(-0.5, 0);
+    if (this->player->right) this->player->move(0.5, 0);
 }

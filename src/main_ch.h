@@ -2,7 +2,15 @@
 
 #include <SFML/Graphics.hpp>
 
-class main_ch {
+class Pos {
+    public:
+        float x;
+        float y;
+        Pos(float x = 0, float y = 0);
+        virtual ~Pos();
+};
+
+class main_ch final : public Pos {
     private:
         sf::RectangleShape *body;
         sf::RenderWindow *win;
@@ -14,5 +22,5 @@ class main_ch {
         sf::RectangleShape get_main_ch();
         void re_init(sf::RenderWindow *w);
         void follow_mouse();
-        void move(int x, int y);
+        void move(float x, float y);
 };

@@ -2,12 +2,19 @@
 #include <iostream>
 #include <cmath>
 
+
+Pos::Pos(float x, float y): x(x), y(y) {}
+
+Pos::~Pos() {
+    std::cout << "Pos\t\tdestructor called...\n";
+}
+
 main_ch::main_ch(sf::RenderWindow *w) {
     if (!w || w == NULL || w == nullptr) {
         this -> body = nullptr;
     } else {
-        int width = w->getSize().x / 10;
-        int height = w->getSize().y / 10;
+        float width = w->getSize().x / 10;
+        float height = w->getSize().y / 10;
         this -> body = new sf::RectangleShape(sf::Vector2f(width, height));
         this->body->setOrigin(this -> body -> getSize().x / 2, this-> body -> getSize().y / 2);     // ustawienie punktu odniesienia
         this->body->setPosition(w->getSize().x / 2 - width /2, w->getSize().y / 2 - height / 2);    // pozycja
@@ -17,7 +24,7 @@ main_ch::main_ch(sf::RenderWindow *w) {
 }
 
 main_ch::~main_ch() {
-    std::cout << "main_ch destructor called...\n";
+    std::cout << "Player\t\tdestructor called...\n";
     delete this -> body;
     delete this -> win;
 }
@@ -48,6 +55,6 @@ void main_ch::follow_mouse() {
     this-> body->setRotation(angleDegrees) ;
 }
 
-void main_ch::move(int x, int y) {
+void main_ch::move(float x, float y) {
     this -> body -> move(x, y);
 }
