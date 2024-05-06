@@ -1,18 +1,19 @@
 #pragma once
 
-#include "SFML/Graphics/CircleShape.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
 
 class Enemy final  {
     private:
-        sf::CircleShape *body;
         sf::RenderWindow *win;
+        sf::Sprite sprite;
     public:
-        int velocity;
+        sf::Texture texture;
+        int hp, xp, velocity;
         bool left, right, top, bottom;
-        Enemy(sf::RenderWindow *w = nullptr);
+        Enemy(sf::RenderWindow *w = nullptr, float x=0, float y=0, std::string txt = "../assets/player-placeholder.png");
         ~Enemy();
-        sf::CircleShape getEnemy();
+        sf::Sprite getEnemy();
         void reInit(sf::RenderWindow *w);
         void followPlayer();
         void move(float x, float y);

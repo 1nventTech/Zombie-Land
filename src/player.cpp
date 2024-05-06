@@ -4,16 +4,16 @@
 #include <cmath>
 
 Player::Player(sf::RenderWindow *w) {
-    if (!w || w == NULL || w == nullptr) {
-        this -> body = nullptr;
-    } else {
-        float width = w->getSize().x / 10;
-        float height = w->getSize().y / 10;
-        this -> sprite.setPosition(w->getSize().x / 2 - width /2, w->getSize().y / 2 - height / 2);    // pozycja
+    if (!(!w || w == NULL || w == nullptr)) {
         this -> texture.loadFromFile("../assets/player-placeholder.png");
         this -> sprite.setTexture(this->texture);
         this -> sprite.setScale(5,5);
         this -> sprite.setOrigin(this->texture.getSize().x / 2, this->texture.getSize().y / 2);
+
+        float width = this->sprite.getGlobalBounds().getSize().x;
+        float height = this->sprite.getGlobalBounds().getSize().y;
+
+        this -> sprite.setPosition(w->getSize().x / 2 - width / 2, w->getSize().y / 2 - height / 2);    // pozycja
     }
     this -> win = w;
     left = false, right = false, top = false, bottom = false;
@@ -22,7 +22,6 @@ Player::Player(sf::RenderWindow *w) {
 
 Player::~Player() {
     std::cout << "Player\t\tdestructor called...\n";
-    delete this -> body;
     delete this -> win;
 }
 

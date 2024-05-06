@@ -1,16 +1,19 @@
 #include "enemy.h"
-#include "SFML/Graphics/CircleShape.hpp"
+#include <cstdio>
 #include <iostream>
+#include <string>
 
-Enemy::Enemy(sf::RenderWindow *w) {
-    if (!w || w == NULL || w == nullptr) {
-        this -> body = nullptr;
-    } else {
-        float width = w->getSize().x / 10;
-        float height = w->getSize().y / 10;
-        this -> body = new sf::CircleShape(width);
-        this->body->setOrigin(this -> body -> getRadius() / 2, this-> body -> getRadius() / 2);     // ustawienie punktu odniesienia
-        this->body->setPosition(w->getSize().x / 2 - width / 2, w->getSize().y / 2 - height / 2);    // pozycja
+Enemy::Enemy(sf::RenderWindow *w, float x, float y, std::string txt){
+    if (!(!w || w == NULL || w == nullptr)) {
+        this -> texture.loadFromFile(txt);
+        this -> sprite.setTexture(this->texture);
+        this -> sprite.setScale(5,5);
+        this -> sprite.setOrigin(this->texture.getSize().x / 2, this->texture.getSize().y / 2);
+
+        float width = this->sprite.getGlobalBounds().getSize().x;
+        float height = this->sprite.getGlobalBounds().getSize().y;
+
+        this -> sprite.setPosition(x / 2 - width / 2, y / 2 - height / 2);    // pozycja
     }
     this -> win = w;
     left = false, right = false, top = false, bottom = false;
@@ -19,12 +22,11 @@ Enemy::Enemy(sf::RenderWindow *w) {
 
 Enemy::~Enemy() {
     std::cout << "Enemy\t\tdestructor called...\n";
-    delete this -> body;
     delete this -> win;
 }
 
-sf::CircleShape Enemy::getEnemy() {
-    return *this -> body;
+sf::Sprite Enemy::getEnemy() {
+    return this->sprite;
 }
 void Enemy::reInit(sf::RenderWindow *w) {
     std::cout << "re-initializing: ";
@@ -36,5 +38,5 @@ void Enemy::followPlayer() {
 }
 
 void Enemy::move(float x, float y) {
-    this -> body -> move(x, y);
+    this -> sprite.move(x, y);
 }

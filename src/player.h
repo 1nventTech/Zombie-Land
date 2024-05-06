@@ -4,11 +4,10 @@
 
 class Player final  {
     private:
-        sf::RectangleShape *body;
         sf::RenderWindow *win;
+        sf::Sprite sprite;
     public:
         sf::Texture texture;
-        sf::Sprite sprite;
         int hp, xp, velocity;
         bool left, right, top, bottom;
         Player(sf::RenderWindow *w = nullptr);
