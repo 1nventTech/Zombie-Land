@@ -1,4 +1,4 @@
-#include "./hearders/WINDOW_RESOLUTION.h"
+#include "window_resolution.h"
 #include <iostream>
 
 WR::window_resolution::~window_resolution() {

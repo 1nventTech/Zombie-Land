@@ -1,24 +1,26 @@
 #pragma once
 
-#include "WINDOW_RESOLUTION.h"
-#include "CHARACTERS.h"
-#include "POS.h"
+#include "src/enemy.h"
+#include "window_resolution.h"
+#include "player.h"
 
-class LOOP {
+class Game {
 	private:
-		main_ch *player = new main_ch();
+		Player *player = new Player();
 		bool isFullScreen;
 		sf::RenderWindow * window;
 		sf::Event event_;
 		sf::VideoMode vm;
 		WR::window_resolution res;
+		std::vector<Enemy> enemies;
 	// priv functions
 	void initWindow();
 	void initVariables();
 	
 	public: 
-		LOOP ();
-		virtual ~LOOP ();
+		sf::Time dt;
+		Game ();
+		virtual ~Game ();
 	
 		void update();
 		void render();	

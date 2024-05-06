@@ -1,34 +1,35 @@
-#include "./hearders/LOOP.h"
+#include "game.h"
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/WindowStyle.hpp"
+#include "src/enemy.h"
 #include <iostream>
 
 // Contructor & Destructor
 
-LOOP::LOOP() {
-    // this -> Tit = LOOPname;
+Game::Game() {
+    // this -> Tit = gamename;
     this -> initVariables();
     this -> initWindow();
 }
 
-LOOP::~LOOP() {
+Game::~Game() {
     this->res.~window_resolution();
-    std::cout << "LOOP\t\tdestructor called...\t\t(deleting player & window)" << std::endl;
+    std::cout << "Game\t\tdestructor called...\t\t(deleting player & window)" << std::endl;
     delete this -> player;
     delete this -> window; 
 }
 
 // Private Functions
 
-void LOOP::initWindow() {
+void Game::initWindow() {
     this -> window = new sf::RenderWindow(this -> vm, "Zombie land", sf::Style::Close);
     // this -> player.setPosition(this -> window ->getSize().x / 2, this -> window ->getSize().y / 2);
-    this ->res.update(this ->window);   // update info about current window size
-    // this -> player = new main_ch(this->window);     // re_init function made some mess but
-    this -> player -> re_init(this-> window);           // fixed re_initializing
+    this ->res.update(this -> window);   // update info about current window size
+    // this -> player = new Player(this->window);     // re_init function made some mess but
+    this -> player -> reInit(this -> window);           // fixed re_initializing
 }
 
-void LOOP::initVariables() {
+void Game::initVariables() {
     this -> isFullScreen = false;
     this -> window = nullptr;
 
@@ -38,11 +39,11 @@ void LOOP::initVariables() {
 
 // Public Functions
 
-const bool LOOP::running() const {
+const bool Game::running() const {
     return this -> window -> isOpen();
 }
 
-void LOOP::pollEvents() {
+void Game::pollEvents() {
         while (this -> window -> pollEvent(this -> event_)) {
             switch(event_.type) {
                 case sf::Event::KeyReleased:
@@ -77,12 +78,12 @@ void LOOP::pollEvents() {
                                 this -> window -> create(this -> vm, "Zombie land", sf::Style::Fullscreen);
                                 this -> isFullScreen = true;
                                 this -> res.update(this -> window); 
-                                this -> player = new main_ch(this->window);
+                                this -> player = new Player(this->window);
                             } else {
                                 this -> window -> create(this -> vm, "Zombie land", sf::Style::Close);
                                 this -> isFullScreen = false;
                                 this -> res.update(this -> window); 
-                                this -> player = new main_ch(this->window);     // again this fucking reinit won't work idk why
+                                this -> player = new Player(this->window);     // again this fucking reinit won't work idk why
                             }
                             break;
                         }
@@ -107,21 +108,21 @@ void LOOP::pollEvents() {
             }
         }
 }
-
-void LOOP::update() {
+void Game::update() {
     this -> pollEvents();
 }
 
-void LOOP::render() {
+void Game::render() {
     this -> window -> clear();   
-    this -> window -> draw(this->player->get_main_ch());
+    this -> window -> draw(this->player->getPlayer());
     this -> window -> display();
+
 }
 
-void LOOP::listen() {
-    this -> player -> follow_mouse();
-    if (this->player->top) this->player->move(0, -0.5);
-    if (this->player->bottom) this->player->move(0, 0.5);
-    if (this->player->left) this->player->move(-0.5, 0);
-    if (this->player->right) this->player->move(0.5, 0);
+void Game::listen() {
+    this -> player -> followMouse();
+    if (this->player->top) this->player->move(0, -player->velocity * dt.asSeconds());
+    if (this->player->bottom) this->player->move(0, player->velocity * dt.asSeconds());
+    if (this->player->left) this->player->move(-player->velocity * dt.asSeconds(), 0);
+    if (this->player->right) this->player->move(player->velocity * dt.asSeconds(), 0);
 }
