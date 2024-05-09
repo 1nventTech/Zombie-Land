@@ -1,5 +1,6 @@
 #include "player.h"
 #include <cstdio>
+#include <cstdlib>
 #include <iostream>
 #include <cmath>
 
@@ -13,7 +14,7 @@ Player::Player(sf::RenderWindow *w) {
         float width = this->sprite.getGlobalBounds().getSize().x;
         float height = this->sprite.getGlobalBounds().getSize().y;
 
-        this -> sprite.setPosition(w->getSize().x / 2 - width / 2, w->getSize().y / 2 - height / 2);    // pozycja
+        this -> sprite.setPosition(0 , 0 );    // pozycja
     }
     this -> win = w;
     left = false, right = false, top = false, bottom = false;
@@ -25,9 +26,6 @@ Player::~Player() {
     delete this -> win;
 }
 
-sf::Sprite Player::getPlayer() {
-    return this->sprite;
-}
 void Player::reInit(sf::RenderWindow *w) {
     std::cout << "re-initializing: ";
     this->~Player();
@@ -46,7 +44,7 @@ void Player::followMouse() {
 
     // Convert angle from radians to degrees
     float angleDegrees = angle * 180.0f / M_PI;
-    if (mousePosition.x <= sprite.getGlobalBounds().getPosition().x + sprite.getGlobalBounds().getSize().x / 2){
+    if (mouseWorldPosition.x <= sprite.getPosition().x + sprite.getTexture()->getSize().x / 2){
         this->sprite.setScale(5,-5);
     }else{
         this->sprite.setScale(5,5);

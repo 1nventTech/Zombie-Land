@@ -13,7 +13,9 @@ class Player final  {
         Player(sf::RenderWindow *w = nullptr);
         ~Player();
         void upgradePlayer();
-        sf::Sprite getPlayer();
+        inline sf::Sprite getPlayer(){
+            return sprite;
+        }
         void reInit(sf::RenderWindow *w);
         void followMouse();
         void move(float x, float y);

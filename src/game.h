@@ -3,12 +3,14 @@
 #include "src/enemy.h"
 #include "window_resolution.h"
 #include "player.h"
+#include "camera.h"
 
 class Game {
 	private:
 		Player *player = new Player();
+		Camera *camera = new Camera();;
 		bool isFullScreen;
-		sf::RenderWindow * window;
+		sf::RenderWindow *window;
 		sf::Event event_;
 		sf::VideoMode vm;
 		WR::window_resolution res;

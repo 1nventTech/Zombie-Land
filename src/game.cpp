@@ -1,7 +1,10 @@
 #include "game.h"
+#include "SFML/Graphics/CircleShape.hpp"
+#include "SFML/Graphics/Rect.hpp"
+#include "SFML/Graphics/View.hpp"
 #include "SFML/Window/Keyboard.hpp"
 #include "SFML/Window/WindowStyle.hpp"
-#include "src/enemy.h"
+#include <cstdio>
 #include <iostream>
 
 // Contructor & Destructor
@@ -27,6 +30,9 @@ void Game::initWindow() {
     this ->res.update(this -> window);   // update info about current window size
     // this -> player = new Player(this->window);     // re_init function made some mess but
     this -> player -> reInit(this -> window);           // fixed re_initializing
+
+    this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
+    this -> window -> setView(this->camera->getCamera()); 
 }
 
 void Game::initVariables() {
@@ -35,6 +41,7 @@ void Game::initVariables() {
 
     this -> vm.width = 1111;
     this -> vm.height = 673;
+    
 }
 
 // Public Functions
@@ -76,18 +83,22 @@ void Game::pollEvents() {
                         case sf::Keyboard::Key::F11: {
                             if (!(this -> isFullScreen)) {
                                 this -> window -> create(this -> vm, "Zombie land", sf::Style::Fullscreen);
+                                this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
+                                this -> window->setView(this->camera->getCamera());
                                 this -> isFullScreen = true;
                                 this -> res.update(this -> window); 
                                 this -> player = new Player(this->window);
                             } else {
                                 this -> window -> create(this -> vm, "Zombie land", sf::Style::Close);
+                                this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
+                                this -> window->setView(this->camera->getCamera());
                                 this -> isFullScreen = false;
                                 this -> res.update(this -> window); 
                                 this -> player = new Player(this->window);     // again this fucking reinit won't work idk why
                             }
                             break;
                         }
-                        // player interactions with kkeyboard
+                        // player interactions with keyboard
                         case sf::Keyboard::Key::W:
                             this->player->top = true;
                             break;
@@ -102,6 +113,7 @@ void Game::pollEvents() {
                             break;
                         case sf::Keyboard::Key::I:
                             this -> res.info();
+                            this -> window -> setView(this -> camera -> getCamera());
                             break;
                     }   // end ^ switch(event_.key.code)
                     break;
@@ -113,16 +125,25 @@ void Game::update() {
 }
 
 void Game::render() {
+    //marker
+    sf::CircleShape circle(20);
+    circle.setPosition(-200,0);
+    circle.setFillColor(sf::Color(119,58,168));
+
     this -> window -> clear();   
+    this -> camera -> getCamera().setCenter(player->getPlayer().getPosition());
+    this -> window -> setView(this -> camera -> getCamera());
     this -> window -> draw(this->player->getPlayer());
+    this -> window -> draw(circle);
     this -> window -> display();
 
 }
 
 void Game::listen() {
     this -> player -> followMouse();
-    if (this->player->top) this->player->move(0, -player->velocity * dt.asSeconds());
-    if (this->player->bottom) this->player->move(0, player->velocity * dt.asSeconds());
-    if (this->player->left) this->player->move(-player->velocity * dt.asSeconds(), 0);
-    if (this->player->right) this->player->move(player->velocity * dt.asSeconds(), 0);
+    if (this->player->top) this->player->move(0, -player->velocity * dt.asSeconds());   
+    if (this->player->bottom) this->player->move(0, player->velocity * dt.asSeconds()); 
+    if (this->player->left) this->player->move(-player->velocity * dt.asSeconds(), 0);  
+    if (this->player->right) this->player->move(player->velocity * dt.asSeconds(), 0);  
+
 }
