@@ -17,9 +17,9 @@ Game::Game() {
 
 Game::~Game() {
     this->res.~window_resolution();
-    std::cout << "Game\t\tdestructor called...\t\t(deleting player & window)" << std::endl;
+    std::cout << "Game\t\tdestructor called...\t\t(deleting player & camera)" << std::endl;
     delete this -> player;
-    delete this -> window; 
+    delete this -> camera;
 }
 
 // Private Functions

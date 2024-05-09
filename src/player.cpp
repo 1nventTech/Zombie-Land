@@ -23,7 +23,6 @@ Player::Player(sf::RenderWindow *w) {
 
 Player::~Player() {
     std::cout << "Player\t\tdestructor called...\n";
-    delete this -> win;
 }
 
 void Player::reInit(sf::RenderWindow *w) {

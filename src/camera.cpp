@@ -5,7 +5,7 @@ Camera::Camera(int width, int height, int x, int y){
     this->view.reset(sf::FloatRect(x,y,width,height));
 }
 Camera::~Camera(){}
-
+    
 void Camera::updateCameraPosition(float x, float y){
     this->view.move(x,y);
 }

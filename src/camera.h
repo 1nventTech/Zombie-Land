@@ -12,5 +12,4 @@ public:
     inline sf::View &getCamera(){
         return view;
     }
-
 };
