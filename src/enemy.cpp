@@ -1,42 +1,65 @@
 #include "enemy.h"
-#include <cstdio>
 #include <iostream>
-#include <string>
+#include <cmath>
 
-Enemy::Enemy(sf::RenderWindow *w, float x, float y, std::string txt){
-    if (!(!w || w == NULL || w == nullptr)) {
-        this -> texture.loadFromFile(txt);
-        this -> sprite.setTexture(this->texture);
-        this -> sprite.setScale(5,5);
-        this -> sprite.setOrigin(this->texture.getSize().x / 2, this->texture.getSize().y / 2);
+Enemy::Enemy() : Character("../assets/zombie.png"), canAttack(true) {
+    this->velocity = std::abs(velocity);
+    this->target = nullptr;
+    this->speed = 0.4f;
+    this->damage_amount = 10;
+}
 
-        float width = this->sprite.getGlobalBounds().getSize().x;
-        float height = this->sprite.getGlobalBounds().getSize().y;
-
-        this -> sprite.setPosition(x / 2 - width / 2, y / 2 - height / 2);    // pozycja
+void Enemy::update() {
+    if (target) {
+        follow();
+        check_collision();
     }
-    this -> win = w;
-    left = false, right = false, top = false, bottom = false;
-    this -> velocity = 500;
+}
+
+void Enemy::set_target(Character& player) {
+    target = &player;
+}
+
+void Enemy::follow() {
+    sf::Vector2f enemyPos = this->getPosition();
+    sf::Vector2f targetPos = target->getPosition();
+
+    sf::Vector2f direction = targetPos - enemyPos;
+
+    float length = std::sqrt(direction.x * direction.x + direction.y * direction.y);
+    if (length != 0) {
+        direction.x /= length;
+        direction.y /= length;
+    }
+
+    this->move(direction.x * speed, direction.y * speed);
+}
+
+void Enemy::damage() {
+    if (canAttack) {
+        target->takeDamage(this->damage_amount);
+        lastAttackTime = std::chrono::steady_clock::now();
+        canAttack = false;
+    }
+}
+
+void Enemy::resetAttackCooldown() {
+    auto currentTime = std::chrono::steady_clock::now();
+    auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - lastAttackTime).count();
+    if (elapsedTime >= 2) {
+        canAttack = true;
+    }
 }
 
 Enemy::~Enemy() {
     std::cout << "Enemy\t\tdestructor called...\n";
-    delete this -> win;
 }
 
-sf::Sprite Enemy::getEnemy() {
-    return this->sprite;
-}
-void Enemy::reInit(sf::RenderWindow *w) {
-    std::cout << "re-initializing: ";
-    this->~Enemy();
-    new(this) Enemy(w);
-}
-void Enemy::followPlayer() {
+void Enemy::check_collision() {
+    sf::FloatRect enemyBounds = this->getGlobalBounds();
+    sf::FloatRect playerBounds = target->getGlobalBounds();
 
-}
-
-void Enemy::move(float x, float y) {
-    this -> sprite.move(x, y);
+    if (enemyBounds.intersects(playerBounds)) {
+        damage();
+    }
 }

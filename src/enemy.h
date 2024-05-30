@@ -1,20 +1,27 @@
 #pragma once
 
+#include "character.h"
 #include <SFML/Graphics.hpp>
-#include <string>
+#include <iostream>
+#include <chrono>
 
-class Enemy final  {
+class Enemy final : public Character {
     private:
-        sf::RenderWindow *win;
-        sf::Sprite sprite;
+        Character * target;
+        float speed;
+        bool canAttack;
+        std::chrono::steady_clock::time_point lastAttackTime;
+        float damage_amount;
     public:
-        sf::Texture texture;
-        int hp, xp, velocity;
-        bool left, right, top, bottom;
-        Enemy(sf::RenderWindow *w = nullptr, float x=0, float y=0, std::string txt = "../assets/player-placeholder.png");
-        ~Enemy();
-        sf::Sprite getEnemy();
-        void reInit(sf::RenderWindow *w);
-        void followPlayer();
-        void move(float x, float y);
+        // sf::FloatRect getGlobalBounds() const {
+        //     return this->sprite.getGlobalBounds();
+        // }
+        Enemy();
+        ~Enemy() override;
+        void set_target(Character & player);
+        void follow();
+        void damage();
+        void update();
+        void check_collision();
+        void resetAttackCooldown();
 };

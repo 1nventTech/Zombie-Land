@@ -7,11 +7,11 @@ Character::Character(const std::string& textureFile) {
     }
     sprite.setTexture(texture);
     // sprite.setOrigin(texture.getSize().x / 2, texture.getSize().y / 2);
-    sprite.setScale(5, 5);
+    sprite.setScale(0.3, 0.3);
     this->sprite.setOrigin(this->texture.getSize().x / 2, this->texture.getSize().y / 2);
-    this->sprite.setPosition(1680, 1050); // Position of the player
+    this->sprite.setPosition(2020, 1100); // Position of the player
     velocity = 50;
-    // hp = 100;
+    hp = 40;
 }
 
 void Character::setPosition(float x, float y) {
@@ -25,6 +25,7 @@ void Character::move(float dx, float dy) {
 }
 
 void Character::render(sf::RenderWindow& window) {
+    check_alive();
     window.draw(sprite);
 }
 
@@ -47,4 +48,11 @@ void Character::takeDamage(int amount) {
 void Character::update_pos(int x, int y) {
     this->x = x;
     this->y = y;
+}
+
+void Character::check_alive() {
+    if (this->hp <= 0) {
+        this->hp = 0;
+        this -> ~Character();
+    }
 }

@@ -1,3 +1,7 @@
+#pragma once
+
+#include "character.h"
+#include "enemy.h"
 #include "game.h"
 #include "SFML/Graphics/CircleShape.hpp"
 #include "SFML/Graphics/Rect.hpp"
@@ -8,179 +12,267 @@
 #include <iterator>
 #include <cstdlib>
 
-// Contructor & Destructor
-#define SetTerrainX() 
+sf::Vector2f enemySpawnRange(500.f, 500.f);
 
+// Constructor & Destructor
 Game::Game() {
-    // load font
+    // Load font
     if (!font.loadFromFile("../assets/Jacquard12-Regular.ttf"))
         exit(EXIT_FAILURE);
-    //
-    this -> initVariables();
-    this -> initWindow();
+    
+    this->initVariables();
+    this->initWindow();
 }
 
 Game::~Game() {
-    this->res.~window_resolution();
     std::cout << "Game\t\tdestructor called...\t\t(deleting player & camera)" << std::endl;
-    delete this -> player;
-    delete this -> camera;
+    delete this->player;
+    delete this->camera;
+    // delete this->enemy;
+    // for (auto &enemy : enemies) {
+    //     delete enemy;
+    // }
+    // enemies.clear();
+    cleanUp();  // enemys
 }
 
 // Private Functions
-
 void Game::initWindow() {
-    this -> window = new sf::RenderWindow(this -> vm, "Zombie land", sf::Style::Close);
-    // this -> player.setPosition(this -> window ->getSize().x / 2, this -> window ->getSize().y / 2);
-    this ->res.update(this -> window);   // update info about current window size
-    // this -> player = new Player(this->window);     // re_init function made some mess but
-    this -> player -> reInit(this -> window);           // fixed re_initializing
+    this->window = new sf::RenderWindow(this->vm, "Zombie land", sf::Style::Close);
+    this->res.update(this->window);   // Update info about current window size
+    this->player->reInit(this->window); // Fixed re-initializing
 
-    this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
-    this -> window -> setView(this->camera->getCamera()); 
+    this->camera->updateCameraSize(window->getSize().x, window->getSize().y);
+    this->window->setView(this->camera->getCamera());
 }
+
 void Game::initVariables() {
     incrementW = 0;
     incrementS = 0;
     incrementA = 0;
     incrementD = 0;
 
-    this -> isFullScreen = false;
-    this -> show_pos = false;
-    this -> window = nullptr;
+    this->isFullScreen = false;
+    this->show_pos = false;
+    this->window = nullptr;
 
-    this -> vm.width = 1111;
-    this -> vm.height = 673;
+    this->vm.width = 1111;
+    this->vm.height = 673;
     backgroundTexture.loadFromFile("../assets/grass.png");
-    TerrainGenerator terrain(backgroundTexture,sf::Vector2(res.width,res.height));
+    terrain = TerrainGenerator(backgroundTexture, sf::Vector2(res.width, res.height));
 
-
+    this->player = new Player();
+    this->camera = new Camera();
+    // this->enemy = new Enemy(); // Initialize the enemy
+    // this->enemy->set_target(*this -> player);
+    enemySpawnInterval = sf::seconds(3.f); // Change this as needed
 }
-void Game::setTerrain(){
-    terrain.getSprite().setPosition(this->player->getPlayer().getPosition().x-res.width, this->player->getPlayer().getPosition().y-res.height);     
+
+void Game::setTerrain() {
+    terrain.getSprite().setPosition(this->player->getPlayer().getPosition().x - res.width, this->player->getPlayer().getPosition().y - res.height);
 }
 
 // Public Functions
-
 const bool Game::running() const {
-    return this -> window -> isOpen();
+    return this->window->isOpen();
 }
-void Game::pollEvents() {
-        while (this -> window -> pollEvent(this -> event_)) {
-            // player->player_info(this -> font, this->window);  // display player stats 
-            switch(event_.type) {
-                case sf::Event::KeyReleased:
-                    switch (event_.key.code) {
-                        case sf::Keyboard::Key::W:
-                            this->player->top = (bool)0;
-                            setTerrain();
-                            break;
-                        case sf::Keyboard::Key::A:
-                            this->player->left = (bool)0;
-                            if(this->player->top){
-                                
 
-                            }
+void Game::pollEvents() {
+    while (this->window->pollEvent(this->event_)) {
+        switch (event_.type) {
+            case sf::Event::KeyReleased:
+                switch (event_.key.code) {
+                    case sf::Keyboard::Key::W:
+                        this->player->top = false;
+                        setTerrain();
+                        break;
+                    case sf::Keyboard::Key::A:
+                        this->player->left = false;
+                        setTerrain();
+                        break;
+                    case sf::Keyboard::Key::S:
+                        this->player->bottom = false;
+                        setTerrain();
+                        break;
+                    case sf::Keyboard::Key::D:
+                        this->player->right = false;
+                        setTerrain();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case sf::Event::Closed:
+                this->window->close();
+                break;
+            case sf::Event::KeyPressed:
+                switch (event_.key.code) {
+                    case sf::Keyboard::Key::Escape:
+                        this->window->close();
+                        break;
+                    case sf::Keyboard::Key::Q:
+                        this->window->close();
+                        break;
+                    case sf::Keyboard::Key::F11:
+                        if (!(this->isFullScreen)) {
+                            this->window->create(this->vm, "Zombie land", sf::Style::Fullscreen);
+                            this->camera->updateCameraSize(window->getSize().x, window->getSize().y);
+                            this->window->setView(this->camera->getCamera());
+                            this->isFullScreen = true;
+                            this->res.update(this->window);
+                            this->player = new Player(this->window);
                             setTerrain();
-                            break;
-                        case sf::Keyboard::Key::S:
-                            this->player->bottom = (bool)0;
+                        } else {
+                            this->window->create(this->vm, "Zombie land", sf::Style::Close);
+                            this->camera->updateCameraSize(window->getSize().x, window->getSize().y);
+                            this->window->setView(this->camera->getCamera());
+                            this->isFullScreen = false;
+                            this->res.update(this->window);
+                            this->player = new Player(this->window);
                             setTerrain();
-                            break;
-                        case sf::Keyboard::Key::D:
-                            this->player->right = (bool)0;
-                            setTerrain();
-                            break;  
-                        default:
-                            break;
-                    }
-                    break;
-                case sf::Event::Closed: 
-                    this -> window -> close();
-                    break;
-                case sf::Event::KeyPressed:
-                    switch(event_.key.code) {
-                        case sf::Keyboard::Key::Escape:
-                            this -> window -> close();
-                            break;
-                        case sf::Keyboard::Key::Q:
-                            this -> window -> close();
-                            break;
-                        case sf::Keyboard::Key::F11: {
-                            if (!(this -> isFullScreen)) {
-                                this -> window -> create(this -> vm, "Zombie land", sf::Style::Fullscreen);
-                                this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
-                                this -> window->setView(this->camera->getCamera());
-                                this -> isFullScreen = true;
-                                this -> res.update(this -> window); 
-                                this -> player = new Player(this->window);
-                                setTerrain();
-                            } else {
-                                this -> window -> create(this -> vm, "Zombie land", sf::Style::Close);
-                                this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
-                                this -> window->setView(this->camera->getCamera());
-                                this -> isFullScreen = false;
-                                this -> res.update(this -> window); 
-                                this -> player = new Player(this->window);     // again this fucking reinit won't work idk why
-                                setTerrain();
-                            }
-                            break;
-                        case sf::Keyboard::Key::P:
-                            this->show_pos = !this->show_pos;
-                            break;
-                        default:
-                            break;
                         }
-                        // player interactions with keyboard
-                        case sf::Keyboard::Key::W:
-                            this->player->top = true;
-                            //this way is better but.....idk
-                            //if(((int)(this->player->getPlayer().getPosition().y) % 33) == 0){
-                            //    terrain.getSprite().setPosition(this->player->getPlayer().getPosition().x-(res.width * 2 / 2),this->player->getPlayer().getPosition().y-(res.height * 2 / 2));     
-                            //}
-                            if(incrementW == 3){
-                                setTerrain();
-                                incrementW = 0;
-                            }
-                            incrementW++;
-                            break;
-                        case sf::Keyboard::Key::A:
-                            this->player->left = true;
-                            if(incrementA == 3){
-                                setTerrain();
-                                incrementA = 0;
-                            }
-                            incrementA++;
-                            break;
-                        case sf::Keyboard::Key::S:
-                            this->player->bottom = true;
-                            if(incrementS == 3){
-                                setTerrain();
-                                incrementS = 0;
-                            }
-                            incrementS++;
-                            break;
-                        case sf::Keyboard::Key::D:
-                            this->player->right = true;
-                            if(incrementD == 3){
-                                setTerrain();
-                                incrementD = 0;
-                            }
-                            incrementD++;
-                            break;
-                        case sf::Keyboard::Key::I:
-                            this -> res.info();
-                            break;
-                    }   // end ^ switch(event_.key.code)
-                    break;
-                        default:
-                            break;
-            }
+                        break;
+                    case sf::Keyboard::Key::P:
+                        this->show_pos = !this->show_pos;
+                        break;
+                    default:
+                        break;
+                }
+                switch (event_.key.code) {
+                    case sf::Keyboard::Key::W:
+                        this->player->top = true;
+                        if (incrementW == 3) {
+                            setTerrain();
+                            incrementW = 0;
+                        }
+                        incrementW++;
+                        break;
+                    case sf::Keyboard::Key::A:
+                        this->player->left = true;
+                        if (incrementA == 3) {
+                            setTerrain();
+                            incrementA = 0;
+                        }
+                        incrementA++;
+                        break;
+                    case sf::Keyboard::Key::S:
+                        this->player->bottom = true;
+                        if (incrementS == 3) {
+                            setTerrain();
+                            incrementS = 0;
+                        }
+                        incrementS++;
+                        break;
+                    case sf::Keyboard::Key::D:
+                        this->player->right = true;
+                        if (incrementD == 3) {
+                            setTerrain();
+                            incrementD = 0;
+                        }
+                        incrementD++;
+                        break;
+                    case sf::Keyboard::Key::I:
+                        this->res.info();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
         }
+    }
 }
+
+// void Game::spawnEnemyRandomly() {
+//     // Generate random x and y coordinates within the specified range
+//     float x = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.x)) + this->player->getPlayer().getPosition().x - enemySpawnRange.x;
+//     float y = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.y)) + this->player->getPlayer().getPosition().y - enemySpawnRange.y;
+
+//     // Create a new enemy at the generated position
+//     Enemy* newEnemy = new Enemy();
+//     newEnemy->setPosition(x, y);
+
+//     // Add the enemy to the vector
+//     enemies.push_back(newEnemy);
+// }
+
+
+void Game::updateEnemies() {
+    // if (enemySpawnTimer.getElapsedTime() > enemySpawnInterval) {
+    //     spawnEnemyRandomly();
+    //     enemySpawnTimer.restart();
+    // }
+    // for (auto& enemy : enemies) {
+    //     enemy->set_target(*this->player);
+    //     enemy->follow();
+    //     if (enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
+    //         enemy->damage();
+    //     }
+    //     enemy->resetAttackCooldown();
+    // }
+    // Spawn enemies periodically
+    if (enemySpawnTimer.getElapsedTime() > enemySpawnInterval) {
+        spawnEnemyRandomly();
+        enemySpawnTimer.restart();
+    }
+
+    // Update existing enemies
+    for (auto it = enemies.begin(); it != enemies.end();) {
+        (*it)->set_target(*this->player);
+        (*it)->follow();
+        if ((*it)->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
+            (*it)->damage();
+        }
+        (*it)->resetAttackCooldown();
+
+        // // Remove enemies that are no longer alive
+        // if ((*it)->check_alive()) {
+        //     delete *it;
+        //     it = enemies.erase(it);
+        // } else {
+        //     ++it;
+        // }
+    }
+}
+void Game::spawnEnemyRandomly() {
+    // Generate random x and y coordinates within the specified range
+    float x = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.x)) + this->player->getPlayer().getPosition().x - enemySpawnRange.x;
+    float y = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.y)) + this->player->getPlayer().getPosition().y - enemySpawnRange.y;
+
+    // Create a new enemy at the generated position
+    Enemy* newEnemy = new Enemy();
+    newEnemy->setPosition(x, y);
+
+    // Add the enemy to the vector
+    enemies.push_back(newEnemy);
+}
+
+void Game::cleanUp() {
+    // Clean up enemies
+    for (auto& enemy : enemies) {
+        delete enemy;
+    }
+    enemies.clear();
+}
+
+
 void Game::update() {
-    this -> pollEvents();
+    this->pollEvents();
+
+    // Enemy targeting player
+    // this->enemy->set_target(*this->player);
+    // this->enemy->follow();
+
+    // check colision
+    // if (this->enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
+    //     this->enemy->damage();
+    // }
+    // this->enemy->resetAttackCooldown();
+    this -> updateEnemies();
 }
+
+
 
 void Game::render() {
     sf::CircleShape circle(20);
@@ -192,11 +284,22 @@ void Game::render() {
     this->window->setView(this->camera->getCamera());
 
     this->terrain.draw(this->window);
-    this->window->draw(this->player->getPlayer());
     this->window->draw(circle);
+
+    // this->window->draw(this->player->getPlayer());
+    this->player->render(*this->window);
+
+    // Draw enemy
+    // this->window->draw(this->enemy->getSprite());
+    // this->enemy->render(*this->window);
+    for (auto &enemy : enemies) {
+        this->window->draw(enemy->getSprite());
+    }
 
     // Draw player info (HP and XP)
     this->window->draw(player->player_info(this->font, this->window));
+    
+    this->window->draw(player->get_sword());
 
     if (this->show_pos) {
         this->window->draw(player->pos_info(this->font, this->window));
@@ -205,11 +308,10 @@ void Game::render() {
     this->window->display();
 }
 
-
 void Game::listen() {
-    this -> player -> followMouse();
-    if (this->player->top) this->player->move(0, -player->getVelocity() * dt.asSeconds());   
-    if (this->player->bottom) this->player->move(0, player->getVelocity() * dt.asSeconds()); 
-    if (this->player->left) this->player->move(-player->getVelocity() * dt.asSeconds(), 0);  
-    if (this->player->right) this->player->move(player->getVelocity() * dt.asSeconds(), 0);  
+    this->player->followMouse();
+    if (this->player->top) this->player->move(0, -player->getVelocity() * dt.asSeconds());
+    if (this->player->bottom) this->player->move(0, player->getVelocity() * dt.asSeconds());
+    if (this->player->left) this->player->move(-player->getVelocity() * dt.asSeconds(), 0);
+    if (this->player->right) this->player->move(player->getVelocity() * dt.asSeconds(), 0);
 }

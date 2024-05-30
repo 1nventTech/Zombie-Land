@@ -18,7 +18,9 @@ class Character : public Axis {
         void setPosition(float x, float y);
         virtual void move(float dx, float dy);
         virtual void render(sf::RenderWindow& window);
-
+        sf::FloatRect getGlobalBounds() const {
+            return this->sprite.getGlobalBounds();
+        }
         sf::Vector2f getPosition() const;
         sf::Sprite& getSprite();
         int getVelocity() const {
@@ -27,4 +29,5 @@ class Character : public Axis {
         void update_pos(int x, int y);
         int getHp() const;
         void takeDamage(int amount);
+        void check_alive();
 };

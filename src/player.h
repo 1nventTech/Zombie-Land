@@ -11,9 +11,11 @@ class Player final : public Character {
         sf::Text p_info;
         int xp;
 
+        // Sword texture and sprite
+        sf::Texture swordTexture;
+        sf::Sprite swordSprite;
     public:
         bool left, right, top, bottom;
-            
         Player(sf::RenderWindow *w = nullptr);
         ~Player();
             
@@ -22,6 +24,15 @@ class Player final : public Character {
         inline sf::Sprite getPlayer(){
             return sprite;
         }
+
+        void update_sword();
+        inline sf::Sprite get_sword() {
+            update_sword();
+            return swordSprite;
+        }
+        // sf::FloatRect getGlobalBounds() const {
+        //     return this->sprite.getGlobalBounds();
+        // }
         void reInit(sf::RenderWindow *w);
         void followMouse();
         void move(float x, float y);

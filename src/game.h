@@ -11,7 +11,7 @@ class Game {
 	private:
 		Player *player = new Player();
 		Camera *camera = new Camera();
-
+		// Enemy  *enemy = new Enemy();
 		sf::Texture backgroundTexture;
 		bool isFullScreen;
 		bool show_pos;
@@ -21,7 +21,6 @@ class Game {
 		sf::VideoMode vm;
 		sf::View terrainView;
 		WR::window_resolution res;
-		std::vector<Enemy> enemies;
 		int incrementW;
 		int incrementS;
 		int incrementA;
@@ -30,11 +29,22 @@ class Game {
 		// font
 		sf::Font font;
 		
+		// Enemy spawning
+		sf::Clock enemySpawnTimer;
+		sf::Time enemySpawnInterval;
+		sf::Vector2f enemySpawnRange;
 
+		std::vector<Enemy*> enemies; // Store pointers to enemies
+
+		// Private functions
+		void spawnEnemyRandomly();
+		void updateEnemies();
+		void renderEnemies();
 	// priv functions
 		void initWindow();
 		void initVariables();
 		void setTerrain();
+		void cleanUp();
 	
 	public: 
 		sf::Time dt;

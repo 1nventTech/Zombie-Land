@@ -30,6 +30,15 @@ Player::Player(sf::RenderWindow* w) {
     this->xp = 50; // Initialize xp or other member variables
 
     if (w) {
+        if (!swordTexture.loadFromFile("../assets/sword2.png")) {
+            exit(EXIT_FAILURE);
+        }
+
+        // Set sword sprite texture and position
+        swordSprite.setTexture(swordTexture);
+        swordSprite.setOrigin(swordTexture.getSize().x / 5, swordTexture.getSize().y - 30);
+        swordSprite.setPosition(sprite.getPosition().x, sprite.getPosition().y);
+        swordSprite.setScale(0.2f, 0.2f);
         // this->texture.loadFromFile("../assets/player-placeholder.png");
         // this->sprite.setTexture(this->texture);
         // this->sprite.setScale(5, 5);
@@ -60,22 +69,42 @@ void Player::upgradePlayer() {
 
 void Player::followMouse() {
     sf::Vector2i mousePosition = sf::Mouse::getPosition(*win);
-
     sf::Vector2f mouseWorldPosition = win->mapPixelToCoords(mousePosition);
 
+    // Calculate angle of rotation for the player's body
     float angle = std::atan2(mouseWorldPosition.y - sprite.getPosition().y,
                              mouseWorldPosition.x - sprite.getPosition().x);
 
     // Convert angle from radians to degrees
     float angleDegrees = angle * 180.0f / M_PI;
-    if (mouseWorldPosition.x <= sprite.getPosition().x + sprite.getTexture()->getSize().x / 2){
-        this -> sprite.setScale(5,-5);
-    }else{
-        this -> sprite.setScale(5,5);
+
+    // Rotate the player's body
+    if (mouseWorldPosition.x <= sprite.getPosition().x + sprite.getTexture()->getSize().x / 2) {
+        sprite.setScale(-5, 5);
+    } else {
+        sprite.setScale(5, 5);
     }
-    // Rotate the body
-    this-> sprite.setRotation(angleDegrees) ;
+    // sprite.setRotation(angleDegrees);
+
+    // Calculate angle of rotation for the sword
+    float swordAngleDegrees = angleDegrees; // Sword angle initially same as player's body angle
+
+    // Ensure that the sword is always perpendicular to the player's direction
+    if (mouseWorldPosition.x <= sprite.getPosition().x + sprite.getTexture()->getSize().x / 2) {
+        swordAngleDegrees += 180.0f; // Add 180 degrees for left-facing player
+    }
+
+    // Set the rotation and position of the sword relative to the player's position
+    swordSprite.setRotation(swordAngleDegrees);
+
+    // Calculate the position of the sword relative to the player's position
+    sf::Vector2f swordOffset(0.0f, 10.0f); // Adjust the offset as needed
+    if (sprite.getScale().x < 0) {
+        swordOffset.x -= swordSprite.getTexture()->getSize().x; // Adjust for left-facing player
+    }
+    swordSprite.setPosition(sprite.getPosition() + swordOffset);
 }
+
 
 void Player::move(float x, float y) {
     this -> sprite.move(x, y);
@@ -91,7 +120,12 @@ sf::Text & Player::player_info(sf::Font &f, sf::RenderWindow *w) {
     // std::cout << "x: " << x << " y: " << y << std::endl;
     info.setFont(f);
     info.setCharacterSize(52);
-    info.setFillColor(sf::Color::Red);
+    if (hp >= (max_hp / 2)) {
+        info.setFillColor(sf::Color::Green);
+    } else if (hp < (max_hp / 2)) {
+        info.setFillColor(sf::Color::Red);
+    }
+    // info.setFillColor(sf::Color::Red);
     info.setString("Hp: " + std::to_string(this->hp) + '\n' + "Xp: " + std::to_string(this->xp) + '\n');
     sf::Vector2f player_pos = sprite.getPosition();
     info.setPosition(player_pos.x - (w->getSize().x / 2), player_pos.y - (w->getSize().y / 2) - 10);
@@ -106,4 +140,8 @@ sf::Text & Player::pos_info(sf::Font &f, sf::RenderWindow *w) {
     sf::Vector2f player_pos = sprite.getPosition();
     p_info.setPosition(player_pos.x - (w->getSize().x / 2), player_pos.y + (w->getSize().y / 3) - 10);
     return p_info;
+}
+
+void Player::update_sword() {
+    this->swordSprite.setPosition(this->x, this->y);
 }
