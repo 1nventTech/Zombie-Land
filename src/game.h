@@ -1,7 +1,7 @@
 #pragma once
 
 #include "SFML/Graphics/View.hpp"
-#include "src/enemy.h"
+#include "enemy.h"
 #include "window_resolution.h"
 #include "player.h"
 #include "camera.h"
@@ -11,6 +11,7 @@ class Game {
 	private:
 		Player *player = new Player();
 		Camera *camera = new Camera();
+
 		sf::Texture backgroundTexture;
 		bool isFullScreen;
 		sf::RenderWindow *window;
@@ -24,6 +25,11 @@ class Game {
 		int incrementS;
 		int incrementA;
 		int incrementD;
+
+		// font
+		sf::Font font;
+		
+
 	// priv functions
 		void initWindow();
 		void initVariables();

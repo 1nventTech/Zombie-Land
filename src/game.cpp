@@ -6,11 +6,16 @@
 #include "SFML/Window/WindowStyle.hpp"
 #include <iostream>
 #include <iterator>
+#include <cstdlib>
 
 // Contructor & Destructor
 #define SetTerrainX() 
+
 Game::Game() {
-    // this -> Tit = gamename;
+    // load font
+    if (!font.loadFromFile("../assets/Jacquard12-Regular.ttf"))
+        exit(EXIT_FAILURE);
+    //
     this -> initVariables();
     this -> initWindow();
 }
@@ -62,6 +67,7 @@ const bool Game::running() const {
 }
 void Game::pollEvents() {
         while (this -> window -> pollEvent(this -> event_)) {
+            // player->player_info(this -> font, this->window);  // display player stats 
             switch(event_.type) {
                 case sf::Event::KeyReleased:
                     switch (event_.key.code) {
@@ -171,24 +177,27 @@ void Game::pollEvents() {
 }
 void Game::update() {
     this -> pollEvents();
-
 }
 
 void Game::render() {
-    //marker
     sf::CircleShape circle(20);
-    circle.setPosition(-200,0);
-    circle.setFillColor(sf::Color(119,58,168));
-     
-    this -> window -> clear();   
-    this -> camera -> getCamera().setCenter(player->getPlayer().getPosition());
-    this -> window -> setView(this -> camera -> getCamera());
-    this -> terrain.draw(this->window);
-    this -> window -> draw(this->player->getPlayer());
-    this -> window -> draw(circle);
-    this -> window -> display();
+    circle.setPosition(-200, 0);
+    circle.setFillColor(sf::Color(119, 58, 168));
 
+    this->window->clear();
+    this->camera->getCamera().setCenter(player->getPlayer().getPosition());
+    this->window->setView(this->camera->getCamera());
+
+    this->terrain.draw(this->window);
+    this->window->draw(this->player->getPlayer());
+    this->window->draw(circle);
+
+    // Draw player info (HP and XP)
+    this->window->draw(player->player_info(this->font, this->window));
+
+    this->window->display();
 }
+
 
 void Game::listen() {
     this -> player -> followMouse();

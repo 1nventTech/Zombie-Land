@@ -1,3 +1,4 @@
+﻿set(SFML_BUILD_AUDIO FALSE)
 cmake_minimum_required(VERSION 3.14.15926)
 project(zombie-land)
 set(CMAKE_CXX_STANDARD 20)
