@@ -14,7 +14,7 @@ Player::Player(sf::RenderWindow *w) {
         float width = this->sprite.getGlobalBounds().getSize().x;
         float height = this->sprite.getGlobalBounds().getSize().y;
 
-        this -> sprite.setPosition(0 , 0 );    // pozycja
+        this -> sprite.setPosition(1680 , 1050 );    // pozycja
     }
     this -> win = w;
     left = false, right = false, top = false, bottom = false;

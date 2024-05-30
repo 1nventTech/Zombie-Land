@@ -1,23 +1,33 @@
 #pragma once
 
+#include "SFML/Graphics/View.hpp"
 #include "src/enemy.h"
 #include "window_resolution.h"
 #include "player.h"
 #include "camera.h"
+#include "terrain_generation.h"
 
 class Game {
 	private:
 		Player *player = new Player();
-		Camera *camera = new Camera();;
+		Camera *camera = new Camera();
+		sf::Texture backgroundTexture;
 		bool isFullScreen;
 		sf::RenderWindow *window;
+		TerrainGenerator terrain;
 		sf::Event event_;
 		sf::VideoMode vm;
+		sf::View terrainView;
 		WR::window_resolution res;
 		std::vector<Enemy> enemies;
+		int incrementW;
+		int incrementS;
+		int incrementA;
+		int incrementD;
 	// priv functions
-	void initWindow();
-	void initVariables();
+		void initWindow();
+		void initVariables();
+		void setTerrain();
 	
 	public: 
 		sf::Time dt;

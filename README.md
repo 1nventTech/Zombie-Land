@@ -15,7 +15,7 @@ run this command while in the project directory to build and run the project
 # TODO
 
 1.  [ V ] Camera movement 
-2.  [ X ] Battle Arena
+2.  [ V ] World
 3.  [ X ] Player interaction with enemies, visible player and enemy stats
 4.  [ X ] Level up mechanic
 5.  [ X ] Enemy wave system
