@@ -14,6 +14,7 @@ class Game {
 
 		sf::Texture backgroundTexture;
 		bool isFullScreen;
+		bool show_pos;
 		sf::RenderWindow *window;
 		TerrainGenerator terrain;
 		sf::Event event_;

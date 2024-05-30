@@ -38,7 +38,6 @@ void Game::initWindow() {
 
     this -> camera -> updateCameraSize(window->getSize().x,window->getSize().y);
     this -> window -> setView(this->camera->getCamera()); 
-
 }
 void Game::initVariables() {
     incrementW = 0;
@@ -47,6 +46,7 @@ void Game::initVariables() {
     incrementD = 0;
 
     this -> isFullScreen = false;
+    this -> show_pos = false;
     this -> window = nullptr;
 
     this -> vm.width = 1111;
@@ -125,6 +125,9 @@ void Game::pollEvents() {
                                 setTerrain();
                             }
                             break;
+                        case sf::Keyboard::Key::P:
+                            this->show_pos = !this->show_pos;
+                            break;
                         default:
                             break;
                         }
@@ -195,14 +198,18 @@ void Game::render() {
     // Draw player info (HP and XP)
     this->window->draw(player->player_info(this->font, this->window));
 
+    if (this->show_pos) {
+        this->window->draw(player->pos_info(this->font, this->window));
+    }
+
     this->window->display();
 }
 
 
 void Game::listen() {
     this -> player -> followMouse();
-    if (this->player->top) this->player->move(0, -player->velocity * dt.asSeconds());   
-    if (this->player->bottom) this->player->move(0, player->velocity * dt.asSeconds()); 
-    if (this->player->left) this->player->move(-player->velocity * dt.asSeconds(), 0);  
-    if (this->player->right) this->player->move(player->velocity * dt.asSeconds(), 0);  
+    if (this->player->top) this->player->move(0, -player->getVelocity() * dt.asSeconds());   
+    if (this->player->bottom) this->player->move(0, player->getVelocity() * dt.asSeconds()); 
+    if (this->player->left) this->player->move(-player->getVelocity() * dt.asSeconds(), 0);  
+    if (this->player->right) this->player->move(player->getVelocity() * dt.asSeconds(), 0);  
 }
