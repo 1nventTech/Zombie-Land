@@ -9,12 +9,12 @@ class Player final : public Character {
         int max_hp;
         sf::Text info;
         sf::Text p_info;
-        int xp;
 
         // Sword texture and sprite
         sf::Texture swordTexture;
         sf::Sprite swordSprite;
     public:
+        int xp;
         bool left, right, top, bottom;
         Player(sf::RenderWindow *w = nullptr);
         ~Player();

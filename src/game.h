@@ -6,12 +6,13 @@
 #include "player.h"
 #include "camera.h"
 #include "terrain_generation.h"
+#include <vector>
 
 class Game {
 	private:
 		Player *player = new Player();
 		Camera *camera = new Camera();
-		// Enemy  *enemy = new Enemy();
+		Enemy  *enemy = new Enemy();
 		sf::Texture backgroundTexture;
 		bool isFullScreen;
 		bool show_pos;

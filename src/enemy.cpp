@@ -7,6 +7,7 @@ Enemy::Enemy() : Character("../assets/zombie.png"), canAttack(true) {
     this->target = nullptr;
     this->speed = 0.4f;
     this->damage_amount = 10;
+    xp_taken = false;
 }
 
 void Enemy::update() {
@@ -52,6 +53,7 @@ void Enemy::resetAttackCooldown() {
 }
 
 Enemy::~Enemy() {
+    // this->xp_taken = true;
     std::cout << "Enemy\t\tdestructor called...\n";
 }
 

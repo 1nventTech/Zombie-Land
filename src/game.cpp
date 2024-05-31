@@ -1,5 +1,3 @@
-#pragma once
-
 #include "character.h"
 #include "enemy.h"
 #include "game.h"
@@ -28,7 +26,7 @@ Game::~Game() {
     std::cout << "Game\t\tdestructor called...\t\t(deleting player & camera)" << std::endl;
     delete this->player;
     delete this->camera;
-    // delete this->enemy;
+    delete this->enemy;
     // for (auto &enemy : enemies) {
     //     delete enemy;
     // }
@@ -63,8 +61,8 @@ void Game::initVariables() {
 
     this->player = new Player();
     this->camera = new Camera();
-    // this->enemy = new Enemy(); // Initialize the enemy
-    // this->enemy->set_target(*this -> player);
+    this->enemy = new Enemy(); // Initialize the enemy
+    this->enemy->set_target(*this -> player);
     enemySpawnInterval = sf::seconds(3.f); // Change this as needed
 }
 
@@ -80,6 +78,10 @@ const bool Game::running() const {
 void Game::pollEvents() {
     while (this->window->pollEvent(this->event_)) {
         switch (event_.type) {
+            case sf::Event::MouseButtonPressed:
+                if (!enemy->get_alive() && !enemy) this->enemy->xp_taken = true; this->player->xp += 40;
+                this->enemy->takeDamage(10);
+                break;
             case sf::Event::KeyReleased:
                 switch (event_.key.code) {
                     case sf::Keyboard::Key::W:
@@ -184,38 +186,41 @@ void Game::pollEvents() {
     }
 }
 
-// void Game::spawnEnemyRandomly() {
-//     // Generate random x and y coordinates within the specified range
-//     float x = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.x)) + this->player->getPlayer().getPosition().x - enemySpawnRange.x;
-//     float y = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.y)) + this->player->getPlayer().getPosition().y - enemySpawnRange.y;
+void Game::spawnEnemyRandomly() {
+    for (int i = 0; i < 2000000; i++) {
 
-//     // Create a new enemy at the generated position
-//     Enemy* newEnemy = new Enemy();
-//     newEnemy->setPosition(x, y);
-
-//     // Add the enemy to the vector
-//     enemies.push_back(newEnemy);
-// }
+    }
+    // // Generate random x and y coordinates within the specified range
+    // std::cout << "Enemy spawned\n";
+    // int xxx = this->player->x + 300 + 50;
+    // int yyy = this->player->y + 300 + 50;
+    // // // Create a new enemy at the generated position
+    // std::cout << "pos";
+    // Enemy* newEnemy = new Enemy();
+    // newEnemy->setPosition(xxx, yyy);
+    // std::cout << "pos setup";
+    // // // Add the enemy to the vector
+    // enemies.push_back(newEnemy);
+    // std::cout << "pushed";
+    // delete newEnemy;
+}
 
 
 void Game::updateEnemies() {
-    // if (enemySpawnTimer.getElapsedTime() > enemySpawnInterval) {
-    //     spawnEnemyRandomly();
-    //     enemySpawnTimer.restart();
-    // }
-    // for (auto& enemy : enemies) {
-    //     enemy->set_target(*this->player);
-    //     enemy->follow();
-    //     if (enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
-    //         enemy->damage();
-    //     }
-    //     enemy->resetAttackCooldown();
-    // }
-    // Spawn enemies periodically
     if (enemySpawnTimer.getElapsedTime() > enemySpawnInterval) {
         spawnEnemyRandomly();
         enemySpawnTimer.restart();
+        std::cout << "spawned";
     }
+    for (auto& enemy : enemies) {
+        enemy->set_target(*this->player);
+        enemy->follow();
+        if (enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
+            enemy->damage();
+        }
+        enemy->resetAttackCooldown();
+    }
+    // }
 
     // Update existing enemies
     for (auto it = enemies.begin(); it != enemies.end();) {
@@ -235,18 +240,18 @@ void Game::updateEnemies() {
         // }
     }
 }
-void Game::spawnEnemyRandomly() {
-    // Generate random x and y coordinates within the specified range
-    float x = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.x)) + this->player->getPlayer().getPosition().x - enemySpawnRange.x;
-    float y = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.y)) + this->player->getPlayer().getPosition().y - enemySpawnRange.y;
+// void Game::spawnEnemyRandomly() {
+//     // // Generate random x and y coordinates within the specified range
+//     float x = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.x)) + this->player->x - enemySpawnRange.x;
+//     float y = static_cast<float>(rand() % static_cast<int>(2 * enemySpawnRange.y)) + this->player->y - enemySpawnRange.y;
 
-    // Create a new enemy at the generated position
-    Enemy* newEnemy = new Enemy();
-    newEnemy->setPosition(x, y);
+//     // Create a new enemy at the generated position
+//     Enemy* newEnemy = new Enemy();
+//     newEnemy->setPosition(x, y);
 
-    // Add the enemy to the vector
-    enemies.push_back(newEnemy);
-}
+//     // Add the enemy to the vector
+//     enemies.push_back(newEnemy);
+// }
 
 void Game::cleanUp() {
     // Clean up enemies
@@ -261,14 +266,14 @@ void Game::update() {
     this->pollEvents();
 
     // Enemy targeting player
-    // this->enemy->set_target(*this->player);
-    // this->enemy->follow();
+    this->enemy->set_target(*this->player);
+    this->enemy->follow();
 
     // check colision
-    // if (this->enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
-    //     this->enemy->damage();
-    // }
-    // this->enemy->resetAttackCooldown();
+    if (this->enemy->getGlobalBounds().intersects(this->player->getGlobalBounds())) {
+        this->enemy->damage();
+    }
+    this->enemy->resetAttackCooldown();
     this -> updateEnemies();
 }
 
@@ -291,7 +296,7 @@ void Game::render() {
 
     // Draw enemy
     // this->window->draw(this->enemy->getSprite());
-    // this->enemy->render(*this->window);
+    if (this->enemy->get_alive()) this->enemy->render(*this->window);
     for (auto &enemy : enemies) {
         this->window->draw(enemy->getSprite());
     }

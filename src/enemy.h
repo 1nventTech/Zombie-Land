@@ -11,8 +11,9 @@ class Enemy final : public Character {
         float speed;
         bool canAttack;
         std::chrono::steady_clock::time_point lastAttackTime;
-        float damage_amount;
+        // float damage_amount;
     public:
+        bool xp_taken;
         // sf::FloatRect getGlobalBounds() const {
         //     return this->sprite.getGlobalBounds();
         // }
